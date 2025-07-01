@@ -42,19 +42,6 @@ export const useSupabaseAuth = () => {
           throw new Error('Supabase client not available');
         }
         
-<<<<<<< HEAD
-        // Check for existing session
-        const result = await getCurrentUser();
-        if (result) {
-          console.log('Found existing user session:', result.user.email);
-          setAuthState({
-            user: result.user,
-            isLoading: false,
-            isAuthenticated: true,
-          });
-        } else {
-          console.log('No existing user session found');
-=======
         // Check for existing session - handle gracefully if none exists
         try {
           const result = await getCurrentUser();
@@ -75,7 +62,6 @@ export const useSupabaseAuth = () => {
           }
         } catch (userError) {
           console.log('No existing session found:', userError.message);
->>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
           setAuthState({
             user: null,
             isLoading: false,
@@ -90,15 +76,9 @@ export const useSupabaseAuth = () => {
           try {
             if (event === 'SIGNED_IN' && session) {
               const result = await getCurrentUser();
-<<<<<<< HEAD
-              if (result) {
-                setAuthState({
-                  user: result.user,
-=======
               if (result && result.profile) {
                 setAuthState({
                   user: result.profile,
->>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
                   isLoading: false,
                   isAuthenticated: true,
                 });
@@ -161,15 +141,6 @@ export const useSupabaseAuth = () => {
     try {
       console.log('Attempting sign up for:', userData.email);
       const { signUp } = await import('../lib/supabase');
-<<<<<<< HEAD
-      const result = await signUp(userData);
-      console.log('Sign up successful:', result.user.email);
-      
-      setAuthState({
-        user: result.user,
-        isLoading: false,
-        isAuthenticated: true,
-=======
       const result = await signUp(userData.email, userData.password, {
         name: userData.name,
         username: userData.username,
@@ -186,7 +157,6 @@ export const useSupabaseAuth = () => {
         user: userResult?.profile || null,
         isLoading: false,
         isAuthenticated: !!userResult?.profile,
->>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       });
       return true;
     } catch (error) {
@@ -209,17 +179,10 @@ export const useSupabaseAuth = () => {
       console.log('Attempting sign in for:', email);
       const { signIn } = await import('../lib/supabase');
       const result = await signIn(email, password);
-<<<<<<< HEAD
-      console.log('Sign in successful:', result.user.email);
-      
-      setAuthState({
-        user: result.user,
-=======
       console.log('Sign in successful:', result.profile?.email);
       
       setAuthState({
         user: result.profile,
->>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
         isLoading: false,
         isAuthenticated: true,
       });
@@ -288,17 +251,10 @@ export const useSupabaseAuth = () => {
     try {
       const { getCurrentUser } = await import('../lib/supabase');
       const result = await getCurrentUser();
-<<<<<<< HEAD
-      if (result) {
-        setAuthState(prev => ({
-          ...prev,
-          user: result.user,
-=======
       if (result && result.profile) {
         setAuthState(prev => ({
           ...prev,
           user: result.profile,
->>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
         }));
       }
     } catch (error) {
