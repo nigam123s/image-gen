@@ -3,6 +3,10 @@ import { X, Package, Plus, Trash2, Download, AlertCircle, CheckCircle, Clock, Wa
 import { sanitizeFormData } from '../utils/textSanitizer';
 import { HistoryImage } from '../types/history';
 import { User } from '../lib/supabase';
+<<<<<<< HEAD
+=======
+import { processImageResponse, getCreditCost } from '../services/imageResponseHandler';
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 import JSZip from 'jszip';
 
 interface BulkProcessingModalProps {
@@ -30,12 +34,15 @@ interface BulkItem {
 
 const WEBHOOK_URL = 'https://n8n.seoengine.agency/webhook/6e9e3b30-cb55-4d74-aa9d-68691983455f';
 
+<<<<<<< HEAD
 // Credit costs
 const CREDIT_COSTS = {
   blog: 5,
   infographic: 10,
 };
 
+=======
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 // Global state to persist modal data across open/close
 let globalBulkState: {
   [key: string]: {
@@ -127,6 +134,7 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
     setCurrentProcessingIndex(-1);
   };
 
+<<<<<<< HEAD
   // Enhanced image extraction function (same as single image generation)
   const extractImageData = (responseData: any, responseText: string): string | null => {
     console.log('BULK: ========================================');
@@ -298,6 +306,31 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
       if (imageType === 'blog') {
         imageDetail = `Blog post title: '${sanitizedData.title}', Content: ${sanitizedData.content}`;
       } else {
+=======
+  const processItem = async (item: BulkItem, index: number): Promise<boolean> => {
+    console.log(`🔄 BULK: Processing item ${index + 1}/${bulkItems.length}`);
+
+    try {
+      // Update item status to processing
+      setBulkItems(prev => prev.map(i => 
+        i.id === item.id ? { ...i, status: 'processing' } : i
+      ));
+      setCurrentProcessingIndex(index);
+
+      // Sanitize the data
+      const sanitizedData = sanitizeFormData({
+        title: item.title,
+        content: item.content,
+        style: item.style,
+        colour: item.colour,
+      });
+
+      // Prepare image detail
+      let imageDetail = '';
+      if (imageType === 'blog') {
+        imageDetail = `Blog post title: '${sanitizedData.title}', Content: ${sanitizedData.content}`;
+      } else {
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
         imageDetail = sanitizedData.content;
       }
 
@@ -315,9 +348,13 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
         image_detail: imageDetail,
       };
 
+<<<<<<< HEAD
       console.log('BULK: 📤 Sending request to webhook...');
       console.log('BULK: Webhook URL:', WEBHOOK_URL);
       console.log('BULK: Payload:', JSON.stringify(payload, null, 2));
+=======
+      console.log('📤 BULK: Sending request to webhook...');
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
       // Create abort controller for timeout
       const controller = new AbortController();
@@ -339,11 +376,15 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
 
       clearTimeout(requestTimeout);
 
+<<<<<<< HEAD
       console.log('BULK: 📥 Response received');
       console.log('BULK: Response status:', response.status);
       console.log('BULK: Response ok:', response.ok);
       console.log('BULK: Response status text:', response.statusText);
       console.log('BULK: Response headers:', Object.fromEntries(response.headers.entries()));
+=======
+      console.log('📥 BULK: Response received:', response.status);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
       if (!response.ok) {
         let errorText = '';
@@ -357,9 +398,13 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
       }
 
       const responseText = await response.text();
+<<<<<<< HEAD
       console.log('BULK: 📄 Raw response received');
       console.log('BULK: Response text length:', responseText.length);
       console.log('BULK: Response text type:', typeof responseText);
+=======
+      console.log('📄 BULK: Raw response received, length:', responseText.length);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
       if (!responseText || responseText.trim() === '') {
         throw new Error('Empty response received from server');
@@ -368,6 +413,7 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
       let result;
       try {
         result = JSON.parse(responseText);
+<<<<<<< HEAD
         console.log('BULK: ✅ Successfully parsed response as JSON');
         console.log('BULK: Parsed result type:', typeof result);
         console.log('BULK: Parsed result keys:', result && typeof result === 'object' ? Object.keys(result) : 'Not an object');
@@ -422,6 +468,46 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
       console.error('BULK: Error name:', error instanceof Error ? error.name : 'Unknown');
       console.error('BULK: Error message:', error instanceof Error ? error.message : 'Unknown error');
       console.error('BULK: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+=======
+        console.log('✅ BULK: Successfully parsed response as JSON');
+      } catch (parseError) {
+        console.log('⚠️ BULK: Failed to parse response as JSON, treating as raw text');
+        result = responseText.trim();
+      }
+
+      // Use the image response handler
+      const processResult = await processImageResponse(
+        result,
+        responseText,
+        imageType,
+        sanitizedData,
+        {
+          user,
+          onImageGenerated,
+          onRefreshUser,
+          isBulkProcessing: true
+        }
+      );
+
+      if (!processResult.success) {
+        throw new Error(processResult.error || 'Failed to process image response');
+      }
+
+      if (!processResult.image) {
+        throw new Error('No image data received');
+      }
+
+      // Update item with success
+      setBulkItems(prev => prev.map(i => 
+        i.id === item.id ? { ...i, status: 'completed', imageData: processResult.image!.base64 } : i
+      ));
+
+      console.log(`✅ BULK: Item ${index + 1} completed successfully`);
+      return true;
+
+    } catch (error) {
+      console.error(`❌ BULK: Error processing item ${index + 1}:`, error);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       
       let errorMessage = 'Failed to generate image';
       if (error instanceof Error) {
@@ -468,16 +554,25 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
 
     // Check if user has enough credits
     if (user) {
+<<<<<<< HEAD
       const requiredCredits = bulkItems.length * CREDIT_COSTS[imageType];
+=======
+      const requiredCredits = bulkItems.length * getCreditCost(imageType);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       if (user.credits < requiredCredits) {
         alert(`Insufficient credits. You need ${requiredCredits} credits but only have ${user.credits}.`);
         return;
       }
     }
 
+<<<<<<< HEAD
     console.log('BULK: 🚀 Starting bulk processing...');
     console.log('BULK: Total items to process:', bulkItems.length);
     console.log('BULK: Image type:', imageType);
+=======
+    console.log('🚀 BULK: Starting bulk processing...');
+    console.log('BULK: Total items to process:', bulkItems.length);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
     setIsProcessing(true);
     setCurrentProcessingIndex(-1);
@@ -486,12 +581,17 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
 
     for (let i = 0; i < bulkItems.length; i++) {
       const item = bulkItems[i];
+<<<<<<< HEAD
       console.log(`BULK: 🔄 Starting item ${i + 1}/${bulkItems.length}`);
+=======
+      console.log(`🔄 BULK: Starting item ${i + 1}/${bulkItems.length}`);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       
       const success = await processItem(item, i);
       
       if (success) {
         successCount++;
+<<<<<<< HEAD
         console.log(`BULK: ✅ Item ${i + 1} successful. Total successes: ${successCount}`);
 
         // Deduct credits for successful generations
@@ -525,11 +625,20 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
         }
       } else {
         console.log(`BULK: ❌ Item ${i + 1} failed`);
+=======
+        console.log(`✅ BULK: Item ${i + 1} successful. Total successes: ${successCount}`);
+      } else {
+        console.log(`❌ BULK: Item ${i + 1} failed`);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       }
 
       // Small delay between requests to avoid overwhelming the server
       if (i < bulkItems.length - 1) {
+<<<<<<< HEAD
         console.log('BULK: ⏳ Waiting 1 second before next request...');
+=======
+        console.log('⏳ BULK: Waiting 1 second before next request...');
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
@@ -540,7 +649,11 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
     // Notify parent about completion
     onBulkCompleted(successCount, bulkItems.length);
 
+<<<<<<< HEAD
     console.log('BULK: 🏁 Bulk processing completed!');
+=======
+    console.log('🏁 BULK: Bulk processing completed!');
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
     console.log(`BULK: Final results: ${successCount}/${bulkItems.length} successful`);
   };
 
@@ -624,7 +737,11 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
   if (!isOpen) return null;
 
   const completedCount = bulkItems.filter(item => item.status === 'completed').length;
+<<<<<<< HEAD
   const totalCreditsNeeded = bulkItems.length * CREDIT_COSTS[imageType];
+=======
+  const totalCreditsNeeded = bulkItems.length * getCreditCost(imageType);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -728,7 +845,11 @@ export const BulkProcessingModal: React.FC<BulkProcessingModalProps> = ({
                         {imageType === 'blog' ? 'Blog Post' : 'Infographic'} #{index + 1}
                       </h4>
                       <span className="text-sm text-gray-500">
+<<<<<<< HEAD
                         Cost: {CREDIT_COSTS[imageType]} credits
+=======
+                        Cost: {getCreditCost(imageType)} credits
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">

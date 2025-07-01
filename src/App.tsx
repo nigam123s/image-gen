@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { Sparkles, Zap, LogOut, User, History, Settings, CreditCard, AlertCircle } from 'lucide-react';
+=======
+import { Sparkles, Zap, LogOut, User, History, Settings, CreditCard, AlertCircle, Brain, Cpu, Palette, Layers } from 'lucide-react';
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 import { ImageTypeSelector } from './components/ImageTypeSelector';
 import { BlogImageForm } from './components/BlogImageForm';
 import { InfographicForm } from './components/InfographicForm';
@@ -18,6 +22,14 @@ import { useImageHistory } from './hooks/useImageHistory';
 import { useProcessingState } from './hooks/useProcessingState';
 import { sanitizeFormData } from './utils/textSanitizer';
 import { isSupabaseConfigured } from './lib/supabase';
+<<<<<<< HEAD
+=======
+import { 
+  processImageResponse, 
+  checkUserCredits, 
+  getCreditCost 
+} from './services/imageResponseHandler';
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
 type Step = 'select' | 'form' | 'result';
 type ImageType = 'blog' | 'infographic' | null;
@@ -103,16 +115,23 @@ function App() {
   };
 
   const checkCredits = (imageType: 'blog' | 'infographic'): boolean => {
+<<<<<<< HEAD
     if (!user || !isAuthenticated || !isSupabaseConfigured) return true; // Allow usage for non-authenticated users or when DB not configured
     
     const requiredCredits = CREDIT_COSTS[imageType];
     if (user.credits < requiredCredits) {
       setError(`Insufficient credits. You need ${requiredCredits} credits to generate a ${imageType} image. You currently have ${user.credits} credits.`);
+=======
+    if (!checkUserCredits(user, imageType)) {
+      const requiredCredits = getCreditCost(imageType);
+      setError(`Insufficient credits. You need ${requiredCredits} credits to generate a ${imageType} image. You currently have ${user?.credits || 0} credits.`);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       return false;
     }
     return true;
   };
 
+<<<<<<< HEAD
   // Enhanced image extraction function with comprehensive debugging (same as bulk modal)
   const extractImageData = (responseData: any, responseText: string): string | null => {
     console.log('SINGLE: ========================================');
@@ -252,6 +271,8 @@ function App() {
     return imageBase64;
   };
 
+=======
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
   const handleFormSubmit = async (data: any) => {
     if (!selectedType) return;
 
@@ -266,7 +287,11 @@ function App() {
     // Set timeout for the request
     const requestTimeout = setTimeout(() => {
       controller.abort();
+<<<<<<< HEAD
       console.error('SINGLE: Request aborted due to timeout');
+=======
+      console.error('❌ Request aborted due to timeout');
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
     }, 120000); // 2 minutes timeout
 
     setIsProcessing(true);
@@ -274,6 +299,7 @@ function App() {
     setError(null);
     
     try {
+<<<<<<< HEAD
       console.log('SINGLE: ===========================================');
       console.log('SINGLE: STARTING SINGLE IMAGE GENERATION');
       console.log('SINGLE: ===========================================');
@@ -283,11 +309,20 @@ function App() {
       // Sanitize the data before sending
       const sanitizedData = sanitizeFormData(data);
       console.log('SINGLE: Sanitized data:', sanitizedData);
+=======
+      console.log('🚀 STARTING N8N WEBHOOK IMAGE GENERATION');
+      console.log('Selected type:', selectedType);
+      console.log('Form data:', data);
+      
+      // Sanitize the data before sending
+      const sanitizedData = sanitizeFormData(data);
+      console.log('Sanitized data:', sanitizedData);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       
       // Prepare image detail with style and colour if provided
       let imageDetail = '';
       if (selectedType === 'blog') {
-        imageDetail = `Blog post title: '${sanitizedData.title}', Content: ${sanitizedData.intro}`;
+        imageDetail = `Blog post title: '${sanitizedData.title}', Content: ${sanitizedData.intro || sanitizedData.content}`;
       } else {
         imageDetail = sanitizedData.content;
       }
@@ -306,9 +341,13 @@ function App() {
         image_detail: imageDetail,
       };
 
+<<<<<<< HEAD
       console.log('SINGLE: 📤 SENDING TO WEBHOOK');
       console.log('SINGLE: Webhook URL:', WEBHOOK_URL);
       console.log('SINGLE: Payload:', JSON.stringify(payload, null, 2));
+=======
+      console.log('📤 Sending to n8n webhook:', payload);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
       const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
@@ -323,19 +362,29 @@ function App() {
 
       clearTimeout(requestTimeout);
 
+<<<<<<< HEAD
       console.log('SINGLE: 📥 WEBHOOK RESPONSE');
       console.log('SINGLE: Response status:', response.status);
       console.log('SINGLE: Response ok:', response.ok);
       console.log('SINGLE: Response status text:', response.statusText);
       console.log('SINGLE: Response headers:', Object.fromEntries(response.headers.entries()));
+=======
+      console.log('📥 N8N webhook response received:', response.status, response.statusText);
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
       if (!response.ok) {
         let errorText = '';
         try {
           errorText = await response.text();
+<<<<<<< HEAD
           console.error('SINGLE: Error response body:', errorText);
         } catch (e) {
           console.error('SINGLE: Could not read error response body');
+=======
+          console.error('❌ N8N webhook error response:', errorText);
+        } catch (e) {
+          console.error('❌ Could not read error response body');
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
         }
         
         if (response.status === 404) {
@@ -349,6 +398,7 @@ function App() {
         }
       }
 
+<<<<<<< HEAD
       // Get response as text first to debug
       const responseText = await response.text();
       console.log('SINGLE: 📄 RAW RESPONSE');
@@ -476,6 +526,71 @@ function App() {
       console.error('SINGLE: 💥 IMAGE GENERATION ERROR');
       console.error('SINGLE: Error details:', error);
       console.error('SINGLE: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+=======
+      // Get response as text first
+      const responseText = await response.text();
+      console.log('📄 N8N webhook raw response received, length:', responseText.length);
+
+      if (!responseText || responseText.trim() === '') {
+        throw new Error('Empty response received from image generation service. Please try again.');
+      }
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        console.log('✅ N8N webhook response parsed as JSON successfully');
+      } catch (parseError) {
+        console.log('⚠️ N8N webhook response was not valid JSON, treating as raw data');
+        result = responseText.trim();
+      }
+
+      // Use the enhanced image response handler - THIS IS THE CRITICAL PART
+      console.log('🔄 Processing n8n webhook response with image handler...');
+      const processResult = await processImageResponse(
+        result,
+        responseText,
+        selectedType,
+        sanitizedData,
+        {
+          user,
+          onImageGenerated: addToHistory,
+          onRefreshUser: refreshUser,
+          isBulkProcessing: false
+        }
+      );
+
+      if (!processResult.success) {
+        console.error('❌ Image response processing failed:', processResult.error);
+        throw new Error(processResult.error || 'Failed to process image response from webhook');
+      }
+
+      if (!processResult.image) {
+        console.error('❌ No image data received from processing');
+        throw new Error('No image data received from webhook');
+      }
+
+      console.log('✅ N8N WEBHOOK IMAGE GENERATION COMPLETED SUCCESSFULLY');
+
+      // Create the generated image object for the UI
+      const newImage = {
+        base64: processResult.image.base64,
+        type: selectedType as 'blog' | 'infographic',
+      };
+      
+      // Update the UI state
+      setGeneratedImage(newImage);
+      setCurrentStep('result');
+      
+      // Show success notification
+      setShowSuccessNotification(true);
+      
+    } catch (error) {
+      console.error('❌ N8N WEBHOOK IMAGE GENERATION ERROR:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
+      console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
       
       let errorMessage = 'Failed to generate image. Please try again.';
       
@@ -503,7 +618,11 @@ function App() {
     } finally {
       clearTimeout(requestTimeout);
       setIsProcessing(false);
+<<<<<<< HEAD
       console.log('SINGLE: 🏁 PROCESSING COMPLETED');
+=======
+      console.log('🏁 N8N webhook processing completed');
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
     }
   };
 
@@ -636,25 +755,49 @@ function App() {
   // Show authentication screen if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="h-screen bg-black relative overflow-hidden flex flex-col">
-        <DreamscapeBackground />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 relative overflow-hidden flex flex-col">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Floating Orbs */}
+          <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-r from-emerald-400/20 to-teal-500/20 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute top-40 right-32 w-24 h-24 bg-gradient-to-r from-amber-400/20 to-orange-500/20 rounded-full blur-xl animate-pulse delay-1000"></div>
+          <div className="absolute bottom-32 left-32 w-40 h-40 bg-gradient-to-r from-violet-400/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-2000"></div>
+          <div className="absolute bottom-20 right-20 w-28 h-28 bg-gradient-to-r from-rose-400/20 to-pink-500/20 rounded-full blur-xl animate-pulse delay-3000"></div>
+          
+          {/* Neural Network Lines */}
+          <div className="absolute inset-0">
+            <svg className="w-full h-full opacity-10" viewBox="0 0 1000 1000">
+              <defs>
+                <linearGradient id="neuralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="50%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+              </defs>
+              <path d="M100,200 Q300,100 500,200 T900,200" stroke="url(#neuralGradient)" strokeWidth="2" fill="none" className="animate-pulse" />
+              <path d="M100,400 Q300,300 500,400 T900,400" stroke="url(#neuralGradient)" strokeWidth="2" fill="none" className="animate-pulse delay-1000" />
+              <path d="M100,600 Q300,500 500,600 T900,600" stroke="url(#neuralGradient)" strokeWidth="2" fill="none" className="animate-pulse delay-2000" />
+              <path d="M100,800 Q300,700 500,800 T900,800" stroke="url(#neuralGradient)" strokeWidth="2" fill="none" className="animate-pulse delay-3000" />
+            </svg>
+          </div>
+        </div>
         
         {/* Header */}
-        <header className="bg-black/20 backdrop-blur-xl border-b border-white/10 relative z-10 flex-shrink-0">
+        <header className="bg-slate-900/50 backdrop-blur-xl border-b border-slate-700/50 relative z-10 flex-shrink-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 mr-3 shadow-lg">
-                  <Sparkles className="w-5 h-5 text-white" />
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 mr-3 shadow-lg">
+                  <Brain className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-white">AI Image Generator</h1>
-                  <p className="text-sm text-blue-200 hidden sm:block">Create stunning visuals with AI</p>
+                  <p className="text-sm text-emerald-200 hidden sm:block">Create stunning visuals with AI</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Sign In
               </button>
@@ -662,42 +805,96 @@ function App() {
           </div>
         </header>
 
-        {/* Hero Section - Perfectly Centered */}
-        <main className="flex-1 flex items-center justify-center relative z-10 px-4 sm:px-6">
-          <div className="text-center max-w-5xl mx-auto">
-            {/* Main Icon */}
-            <div className="flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-600 to-pink-600 mx-auto mb-8 shadow-2xl animate-pulse">
-              <Sparkles className="w-12 h-12 text-white" />
+        {/* Hero Section - Properly Centered with Scroll */}
+        <main className="flex-1 flex items-center justify-center relative z-10 px-4 sm:px-6 py-8 overflow-y-auto">
+          <div className="text-center max-w-5xl mx-auto w-full">
+            {/* Main Icon with Animated Elements */}
+            <div className="relative flex items-center justify-center w-32 h-32 mx-auto mb-8">
+              {/* Main Icon */}
+              <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center shadow-2xl">
+                <Brain className="w-12 h-12 text-white" />
+              </div>
+              
+              {/* Floating Elements Around Icon */}
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full animate-bounce delay-300">
+                <Cpu className="w-4 h-4 text-white m-1" />
+              </div>
+              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-r from-violet-400 to-purple-500 rounded-full animate-bounce delay-700">
+                <Palette className="w-4 h-4 text-white m-1" />
+              </div>
+              <div className="absolute -top-2 -left-2 w-6 h-6 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full animate-bounce delay-1000">
+                <Layers className="w-4 h-4 text-white m-1" />
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full animate-bounce delay-1500">
+                <Sparkles className="w-4 h-4 text-white m-1" />
+              </div>
             </div>
             
-            {/* Main Heading */}
-            <h1 className="text-5xl sm:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-tight">
-              AI Image Generator
+            {/* Main Heading with Better Colors */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                AI Image
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 bg-clip-text text-transparent">
+                Generator
+              </span>
             </h1>
             
             {/* Subtitle */}
-            <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl lg:text-2xl text-slate-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               Create stunning blog featured images and infographics with the power of AI
             </p>
             
             {/* Feature Pills */}
+<<<<<<< HEAD
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white">
                 <Zap className="w-5 h-5 mr-2 text-blue-400" />
+=======
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8">
+              <div className="flex items-center px-4 py-2 bg-slate-800/50 backdrop-blur-sm rounded-full border border-slate-600/50 text-slate-200">
+                <Zap className="w-4 h-4 mr-2 text-emerald-400" />
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
                 Powered by{' '}
                 <a 
                   href="https://seoengine.agency/" 
                   target="_blank" 
                   rel="noopener noreferrer"
+<<<<<<< HEAD
                   className="ml-1 font-semibold text-blue-300 hover:text-blue-200 transition-colors"
+=======
+                  className="ml-1 font-semibold text-emerald-300 hover:text-emerald-200 transition-colors"
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
                 >
                   SEO Engine
                 </a>
               </div>
-              <div className="hidden sm:block w-2 h-2 bg-white/30 rounded-full"></div>
-              <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white">
-                <Sparkles className="w-5 h-5 mr-2 text-purple-400" />
-                Professional Quality
+              <div className="hidden sm:block w-2 h-2 bg-slate-500 rounded-full"></div>
+              <div className="flex items-center px-4 py-2 bg-slate-800/50 backdrop-blur-sm rounded-full border border-slate-600/50 text-slate-200">
+                <Brain className="w-4 h-4 mr-2 text-violet-400" />
+                Neural Networks
+              </div>
+              <div className="hidden sm:block w-2 h-2 bg-slate-500 rounded-full"></div>
+              <div className="flex items-center px-4 py-2 bg-slate-800/50 backdrop-blur-sm rounded-full border border-slate-600/50 text-slate-200">
+                <CreditCard className="w-4 h-4 mr-2 text-amber-400" />
+                {isSupabaseConfigured ? '100 Free Credits' : 'Free to Use'}
+              </div>
+            </div>
+            
+            {/* Stats Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-emerald-400 mb-1">10K+</div>
+                <div className="text-xs sm:text-sm text-slate-400">Images Generated</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-amber-400 mb-1">99.9%</div>
+                <div className="text-xs sm:text-sm text-slate-400">Uptime</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-violet-400 mb-1">30s</div>
+                <div className="text-xs sm:text-sm text-slate-400">Avg Generation</div>
               </div>
               <div className="hidden sm:block w-2 h-2 bg-white/30 rounded-full"></div>
               <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white">
@@ -709,9 +906,9 @@ function App() {
             {/* CTA Button */}
             <button
               onClick={() => setShowAuthModal(true)}
-              className="px-10 py-4 rounded-xl bg-gradient-to-r from-blue-500 via-purple-600 to-pink-600 text-white font-bold hover:from-blue-600 hover:via-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-2xl text-lg border border-white/20"
+              className="px-8 sm:px-10 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-bold hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-2xl text-base sm:text-lg border border-emerald-400/20"
             >
-              Get Started Free
+              Start Creating Free
             </button>
           </div>
         </main>
@@ -918,8 +1115,13 @@ function App() {
                   </div>
                   <p className="text-gray-600 mt-2 text-sm sm:text-base">
                     {selectedType === 'blog' 
+<<<<<<< HEAD
                       ? `Provide your blog details to generate a stunning featured image${isSupabaseConfigured ? ` (${CREDIT_COSTS.blog} credits)` : ''}`
                       : `Provide your content to create a visual infographic${isSupabaseConfigured ? ` (${CREDIT_COSTS.infographic} credits)` : ''}`
+=======
+                      ? `Provide your blog details to generate a stunning featured image${isSupabaseConfigured ? ` (${getCreditCost('blog')} credits)` : ''}`
+                      : `Provide your content to create a visual infographic${isSupabaseConfigured ? ` (${getCreditCost('infographic')} credits)` : ''}`
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
                     }
                   </p>
                 </div>

@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+<<<<<<< HEAD
 import { X, Mail, UserCheck, Sparkles, Eye, EyeOff, UserPlus } from 'lucide-react';
+=======
+import { X, Mail, Sparkles, Eye, EyeOff, UserPlus } from 'lucide-react';
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -40,17 +44,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setIsLoading(false);
   };
 
-  const handleAnonymousSignIn = async () => {
-    setIsLoading(true);
-    setError('');
-
-    const success = await onSignInAnonymously();
-    if (success) {
-      onClose();
-    } else {
-      setError('Failed to sign in anonymously. Please try again.');
-    }
-    setIsLoading(false);
+  const handleOpenSignUp = () => {
+    onClose();
+    onOpenSignUp();
   };
 
   const handleOpenSignUp = () => {
@@ -159,6 +155,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
 
           {/* Sign Up Button */}
+<<<<<<< HEAD
           <button
             onClick={handleOpenSignUp}
             disabled={isLoading}
@@ -171,11 +168,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
 
           {/* Anonymous Sign In */}
+=======
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
           <button
-            onClick={handleAnonymousSignIn}
+            onClick={handleOpenSignUp}
             disabled={isLoading}
-            className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-gray-600 to-gray-700 text-white font-semibold hover:from-gray-700 hover:to-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] disabled:hover:scale-100"
+            className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] disabled:hover:scale-100"
           >
+<<<<<<< HEAD
             {isLoading ? (
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
@@ -187,6 +187,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 Continue Anonymously (Limited Features)
               </div>
             )}
+=======
+            <div className="flex items-center justify-center">
+              <UserPlus className="w-5 h-5 mr-2" />
+              Create New Account (100 Free Credits!)
+            </div>
+>>>>>>> 59a76332f824e926c7a06192e7b3f98dcefe62b6
           </button>
 
           <p className="text-xs text-gray-500 text-center">
